@@ -20,6 +20,16 @@ Requisiti:
     - Le dipendenze elencate in requirements.txt
 """
 
+# IMPORTANTE: su Windows, importare 'libzim' PRIMA di PyQt5 e' necessario
+# per evitare un conflitto a basso livello tra le librerie native (DLL)
+# delle due librerie: caricandole nell'ordine sbagliato, l'apertura di un
+# archivio ZIM causa un crash silenzioso dell'intera applicazione (nessun
+# errore Python, il processo termina e basta — verificato empiricamente).
+# Importarlo qui per primo, anche se non e' usato direttamente in questo
+# file, garantisce che le sue librerie native vengano caricate prima di
+# quelle di Qt in tutto il processo.
+import libzim  # noqa: F401
+
 import sys
 from PyQt5.QtWidgets import QApplication
 

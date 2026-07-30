@@ -17,10 +17,12 @@ from config import salva_config
 from ui.chat_tab import SchedaChat
 from ui.knowledge_tab import SchedaConoscenza
 from ui.settings_tab import SchedaImpostazioni
+from ui.wikipedia_tab import SchedaWikipedia
 from ui.icons import (
     icona_comunicazione,
     icona_archivio,
     icona_configurazione,
+    icona_enciclopedia,
     icona_applicazione,
 )
 from core.llm_client import ClienteOllama
@@ -79,6 +81,7 @@ class FinestraPrincipale(QMainWindow):
 
         self.scheda_conoscenza = SchedaConoscenza(config)
         self.scheda_chat = SchedaChat(config, motore_rag=None)
+        self.scheda_wikipedia = SchedaWikipedia(config)
         self.scheda_impostazioni = SchedaImpostazioni(config)
 
         # Quando il motore RAG e' pronto (o aggiornato dopo un'indicizzazione),
@@ -87,6 +90,7 @@ class FinestraPrincipale(QMainWindow):
 
         self.schede.addTab(self.scheda_chat, icona_comunicazione(), "  COMUNICAZIONE  ")
         self.schede.addTab(self.scheda_conoscenza, icona_archivio(), "  ARCHIVI  ")
+        self.schede.addTab(self.scheda_wikipedia, icona_enciclopedia(), "  ENCICLOPEDIA  ")
         self.schede.addTab(self.scheda_impostazioni, icona_configurazione(), "  CONFIGURAZIONE  ")
 
         # Ripristina l'ultima scheda aperta nella sessione precedente

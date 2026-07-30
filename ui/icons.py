@@ -191,6 +191,36 @@ def disegna_mascotte(dimensione: int = 160) -> QPixmap:
     return pixmap
 
 
+def icona_enciclopedia(dimensione: int = 24) -> QIcon:
+    """Icona a forma di libro aperto, per la scheda Enciclopedia offline."""
+    pixmap = _nuovo_pixmap(dimensione)
+    p = _pittore(pixmap, 2)
+
+    centro_x = dimensione / 2
+    top = dimensione * 0.22
+    bottom = dimensione * 0.82
+
+    # Le due "ali" del libro aperto
+    p.drawLine(QPointF(centro_x, top), QPointF(centro_x, bottom))
+
+    p.drawLine(QPointF(dimensione * 0.12, top + dimensione * 0.04), QPointF(centro_x, top))
+    p.drawLine(QPointF(dimensione * 0.12, top + dimensione * 0.04), QPointF(dimensione * 0.12, bottom - dimensione * 0.04))
+    p.drawLine(QPointF(dimensione * 0.12, bottom - dimensione * 0.04), QPointF(centro_x, bottom))
+
+    p.drawLine(QPointF(dimensione * 0.88, top + dimensione * 0.04), QPointF(centro_x, top))
+    p.drawLine(QPointF(dimensione * 0.88, top + dimensione * 0.04), QPointF(dimensione * 0.88, bottom - dimensione * 0.04))
+    p.drawLine(QPointF(dimensione * 0.88, bottom - dimensione * 0.04), QPointF(centro_x, bottom))
+
+    # Righe di testo stilizzate su entrambe le pagine
+    for frazione in (0.40, 0.55, 0.70):
+        y = top + (bottom - top) * frazione
+        p.drawLine(QPointF(dimensione * 0.20, y), QPointF(centro_x - dimensione * 0.04, y))
+        p.drawLine(QPointF(centro_x + dimensione * 0.04, y), QPointF(dimensione * 0.80, y))
+
+    p.end()
+    return QIcon(pixmap)
+
+
 def icona_applicazione(dimensione: int = 64) -> QIcon:
     """Icona per la finestra dell'applicazione, basata sulla mascotte."""
     return QIcon(disegna_mascotte(dimensione))

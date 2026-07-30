@@ -28,6 +28,7 @@ DEFAULT_CONFIG = {
     "numero_risultati_ricerca": 4,
     "temperatura": 0.4,
     "ultima_scheda": 0,
+    "percorso_zim": "",
 }
 
 

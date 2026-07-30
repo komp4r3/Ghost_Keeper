@@ -6,8 +6,9 @@ Assistente AI offline con base di conoscenza personale — ispirato a **Project 
 
 - **Chat con AI locale**: parli con un modello linguistico che gira interamente sul tuo computer tramite [Ollama](https://ollama.com). Nessun dato viene inviato a servizi esterni.
 - **Base di conoscenza personale**: indica una cartella con i tuoi documenti (PDF, DOCX, TXT, MD). Vengono letti, suddivisi in blocchi e indicizzati con ricerca semantica.
+- **Enciclopedia offline (Wikipedia via Kiwix/ZIM)**: carica un archivio Wikipedia offline (o Wiktionary, guide di sopravvivenza, ecc.) in formato ZIM, scaricabile da [library.kiwix.org](https://library.kiwix.org/), e consultalo con ricerca full-text, navigazione tra i link e voce casuale — tutto localmente, senza server Kiwix separato.
 - **RAG (Retrieval-Augmented Generation)**: quando fai una domanda, l'app recupera automaticamente i passaggi più pertinenti dai tuoi documenti e li usa per rispondere in modo più preciso, citando le fonti.
-- **Interfaccia desktop** in PyQt5, completamente in italiano.
+- **Interfaccia desktop** in PyQt5, completamente in italiano, con estetica terminale post-apocalittico.
 
 ## Differenze rispetto al Project N.O.M.A.D. originale
 
@@ -58,7 +59,8 @@ python main.py
 
 1. **Scheda "Base di Conoscenza"**: scegli la cartella con i tuoi documenti e premi "Indicizza cartella". La prima volta può richiedere qualche minuto, in base a quanti documenti hai.
 2. **Scheda "Chat"**: fai le tue domande. Se la casella "Usa la base di conoscenza" è attiva, l'AI cercherà prima nei tuoi documenti e citerà le fonti.
-3. **Scheda "Impostazioni"**: cambia modello, temperatura, dimensione dei blocchi di testo o numero di estratti recuperati per ogni domanda.
+3. **Scheda "Enciclopedia"**: scarica un archivio ZIM da [library.kiwix.org](https://library.kiwix.org/) (es. una versione "solo testo" di Wikipedia in italiano, molto più leggera della versione completa con immagini) e caricalo con "Sfoglia". Poi cerca liberamente, naviga tra i link interni o premi "Voce Casuale" per scoprire contenuti a caso.
+4. **Scheda "Impostazioni"**: cambia modello, temperatura, dimensione dei blocchi di testo o numero di estratti recuperati per ogni domanda.
 
 ## Struttura del progetto
 
