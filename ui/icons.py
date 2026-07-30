@@ -120,72 +120,88 @@ def icona_configurazione(dimensione: int = 24) -> QIcon:
 
 def disegna_mascotte(dimensione: int = 160) -> QPixmap:
     """
-    Disegna una mascotte originale stile 'companion da terminale retro':
-    un piccolo robot con testa rotonda, antenna e schermo-sorriso.
-    Design originale, non associato a marchi o personaggi esistenti.
+    Disegna un fantasmino con espressione fiera/combattiva (occhi
+    triangolari decisi, sopracciglia aggrottate, coda fluida asimmetrica),
+    in coerenza stilistica con l'identita' visiva degli altri progetti
+    'Ghost' dell'autore (es. GhostRad). Design originale.
     """
+    from PyQt5.QtGui import QPainterPath, QPolygonF
+
     pixmap = _nuovo_pixmap(dimensione)
-    p = _pittore(pixmap, max(2, dimensione // 60))
+    p = _pittore(pixmap, max(2, dimensione // 55))
 
-    centro_x = dimensione / 2
+    margine_laterale = dimensione * 0.16
+    top = dimensione * 0.14
+    larghezza_corpo = dimensione - 2 * margine_laterale
+    raggio_testa = larghezza_corpo / 2
+    inizio_coda_y = dimensione * 0.68
 
-    # Antenna
-    base_antenna = QPointF(centro_x, dimensione * 0.12)
-    cima_antenna = QPointF(centro_x, dimensione * 0.02)
-    p.drawLine(base_antenna, cima_antenna)
+    percorso = QPainterPath()
+    percorso.moveTo(margine_laterale, inizio_coda_y)
+    percorso.lineTo(margine_laterale, top + raggio_testa)
+
+    # Arco superiore arrotondato (la testa)
+    percorso.arcTo(margine_laterale, top, larghezza_corpo, raggio_testa * 2, 180, -180)
+
+    percorso.lineTo(dimensione - margine_laterale, inizio_coda_y)
+
+    # Coda fluida e asimmetrica (invece delle onde simmetriche), che si
+    # assottiglia verso un'unica punta arricciata, come nel logo GhostRad
+    percorso.quadTo(
+        dimensione - margine_laterale * 0.7, dimensione * 0.80,
+        dimensione * 0.62, dimensione * 0.78,
+    )
+    percorso.quadTo(
+        dimensione * 0.48, dimensione * 0.76,
+        dimensione * 0.58, dimensione * 0.90,
+    )
+    percorso.quadTo(
+        dimensione * 0.62, dimensione * 0.97,
+        dimensione * 0.50, dimensione * 0.95,
+    )
+    percorso.quadTo(
+        dimensione * 0.30, dimensione * 0.90,
+        margine_laterale, inizio_coda_y,
+    )
+
+    percorso.closeSubpath()
+    p.drawPath(percorso)
+
+    # Occhi fieri/aggrottati: due triangoli inclinati che si avvicinano
+    # al centro, per dare un'espressione decisa invece che sorpresa
     p.setBrush(VERDE)
-    p.drawEllipse(cima_antenna, dimensione * 0.025, dimensione * 0.025)
+    occhio_y = top + raggio_testa * 0.75
+    dimensione_occhio = dimensione * 0.07
+
+    occhio_sinistro = QPolygonF([
+        QPointF(dimensione * 0.34, occhio_y - dimensione_occhio * 0.3),
+        QPointF(dimensione * 0.34 + dimensione_occhio, occhio_y + dimensione_occhio * 0.5),
+        QPointF(dimensione * 0.34, occhio_y + dimensione_occhio * 0.6),
+    ])
+    occhio_destro = QPolygonF([
+        QPointF(dimensione * 0.66, occhio_y - dimensione_occhio * 0.3),
+        QPointF(dimensione * 0.66 - dimensione_occhio, occhio_y + dimensione_occhio * 0.5),
+        QPointF(dimensione * 0.66, occhio_y + dimensione_occhio * 0.6),
+    ])
+    p.drawPolygon(occhio_sinistro)
+    p.drawPolygon(occhio_destro)
     p.setBrush(Qt.NoBrush)
 
-    # Testa (rettangolo arrotondato, stile "case" di un vecchio monitor)
-    testa = QRectF(dimensione * 0.22, dimensione * 0.12, dimensione * 0.56, dimensione * 0.5)
-    p.drawRoundedRect(testa, dimensione * 0.08, dimensione * 0.08)
-
-    # Schermo/volto interno
-    schermo = QRectF(
-        testa.left() + dimensione * 0.06,
-        testa.top() + dimensione * 0.07,
-        testa.width() - dimensione * 0.12,
-        testa.height() - dimensione * 0.16,
-    )
-    p.drawRoundedRect(schermo, dimensione * 0.04, dimensione * 0.04)
-
-    # Occhi (due segmenti a "trattino", stile schermo CRT)
-    occhio_y = schermo.top() + schermo.height() * 0.38
-    p.setPen(QPen(VERDE, max(2, dimensione // 40)))
+    # Sopracciglia aggrottate (due tratti decisi sopra gli occhi)
     p.drawLine(
-        QPointF(schermo.left() + schermo.width() * 0.22, occhio_y),
-        QPointF(schermo.left() + schermo.width() * 0.38, occhio_y),
+        QPointF(dimensione * 0.32, occhio_y - dimensione * 0.06),
+        QPointF(dimensione * 0.42, occhio_y - dimensione * 0.02),
     )
     p.drawLine(
-        QPointF(schermo.left() + schermo.width() * 0.62, occhio_y),
-        QPointF(schermo.left() + schermo.width() * 0.78, occhio_y),
+        QPointF(dimensione * 0.68, occhio_y - dimensione * 0.06),
+        QPointF(dimensione * 0.58, occhio_y - dimensione * 0.02),
     )
 
-    # Sorriso (arco)
-    sorriso = QRectF(
-        schermo.left() + schermo.width() * 0.25,
-        schermo.top() + schermo.height() * 0.45,
-        schermo.width() * 0.5,
-        schermo.height() * 0.35,
+    # Bocca corrucciata (arco rivolto verso il basso, non sorriso)
+    bocca = QRectF(
+        dimensione * 0.40, occhio_y + dimensione * 0.12, dimensione * 0.20, dimensione * 0.12
     )
-    p.drawArc(sorriso, 0, -180 * 16)
-
-    # Corpo (trapezio semplice)
-    corpo_top_y = testa.bottom() + dimensione * 0.02
-    corpo_bottom_y = dimensione * 0.94
-    p.drawLine(
-        QPointF(dimensione * 0.32, corpo_top_y), QPointF(dimensione * 0.24, corpo_bottom_y)
-    )
-    p.drawLine(
-        QPointF(dimensione * 0.68, corpo_top_y), QPointF(dimensione * 0.76, corpo_bottom_y)
-    )
-    p.drawLine(QPointF(dimensione * 0.24, corpo_bottom_y), QPointF(dimensione * 0.76, corpo_bottom_y))
-
-    # Un piccolo indicatore luminoso sul corpo (come un LED di stato)
-    p.setBrush(VERDE)
-    p.drawEllipse(QPointF(centro_x, (corpo_top_y + corpo_bottom_y) / 2), dimensione * 0.02, dimensione * 0.02)
-    p.setBrush(Qt.NoBrush)
+    p.drawArc(bocca, 0, 180 * 16)
 
     p.end()
     return pixmap
@@ -216,6 +232,33 @@ def icona_enciclopedia(dimensione: int = 24) -> QIcon:
         y = top + (bottom - top) * frazione
         p.drawLine(QPointF(dimensione * 0.20, y), QPointF(centro_x - dimensione * 0.04, y))
         p.drawLine(QPointF(centro_x + dimensione * 0.04, y), QPointF(dimensione * 0.80, y))
+
+    p.end()
+    return QIcon(pixmap)
+
+
+def icona_mappa(dimensione: int = 24) -> QIcon:
+    """Icona a forma di mappa con un segnaposto, per la scheda Cartografia."""
+    pixmap = _nuovo_pixmap(dimensione)
+    p = _pittore(pixmap, 2)
+
+    margine = dimensione * 0.12
+    rettangolo = QRectF(margine, margine, dimensione - 2 * margine, dimensione * 0.62)
+    p.drawRoundedRect(rettangolo, 3, 3)
+
+    # Due pieghe verticali stilizzate, per suggerire una mappa ripiegata
+    x1 = rettangolo.left() + rettangolo.width() / 3
+    x2 = rettangolo.left() + rettangolo.width() * 2 / 3
+    p.drawLine(QPointF(x1, rettangolo.top()), QPointF(x1, rettangolo.bottom()))
+    p.drawLine(QPointF(x2, rettangolo.top()), QPointF(x2, rettangolo.bottom()))
+
+    # Segnaposto (goccia stilizzata come cerchio con punta), sopra la mappa
+    centro_goccia = QPointF(dimensione * 0.5, dimensione * 0.78)
+    raggio_goccia = dimensione * 0.14
+    p.setBrush(NERO)
+    p.drawEllipse(centro_goccia, raggio_goccia, raggio_goccia)
+    p.setBrush(Qt.NoBrush)
+    p.drawEllipse(centro_goccia, raggio_goccia * 0.4, raggio_goccia * 0.4)
 
     p.end()
     return QIcon(pixmap)

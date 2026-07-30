@@ -29,6 +29,7 @@ DEFAULT_CONFIG = {
     "temperatura": 0.4,
     "ultima_scheda": 0,
     "percorso_zim": "",
+    "percorso_mbtiles": "",
 }
 
 
