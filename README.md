@@ -101,41 +101,6 @@ pip uninstall torch -y
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
 
-**Errore SSL `CERTIFICATE_VERIFY_FAILED` durante il download del modello di embedding**
-Tipico di reti aziendali con proxy/filtro SSL (es. ZScaler). Risolvibile con:
-```bash
-pip install pip-system-certs
-```
-Questo fa sì che Python usi l'archivio certificati di Windows invece del proprio elenco interno.
-
-**Errore `403 Forbidden` da huggingface.co anche dopo aver risolto l'SSL**
-Significa che la rete aziendale blocca esplicitamente il dominio. Scarica il modello su un PC senza restrizioni di rete e copia la cartella `~/.cache/huggingface/hub/models--sentence-transformers--all-MiniLM-L6-v2` nello stesso percorso sul PC con restrizioni.
-
-**Le schede in alto mostrano il testo tagliato**
-Problema di rendering di Qt in combinazione con `letter-spacing` nel foglio di stile. Già risolto rimuovendo quella proprietà dal tema.
-
-## Risoluzione problemi noti
-
-**L'app si blocca o si chiude senza errori quando apro un archivio ZIM (Enciclopedia)**
-Bug risolto: era un conflitto a basso livello tra le librerie native (DLL) di PyQt5 e `libzim` su Windows. La soluzione è importare `libzim` prima di PyQt5 nel punto di ingresso dell'applicazione — già applicata in `main.py`. Se il problema si ripresenta, verifica che la riga `import libzim` sia la prima importazione in cima al file, prima di qualsiasi import di PyQt5.
-
-**Errore `[WinError 1114]` legato a `c10.dll` (torch) durante l'inizializzazione**
-Di solito causato da un'installazione incompleta di PyTorch. Reinstallalo con:
-```bash
-pip uninstall torch -y
-pip install torch --index-url https://download.pytorch.org/whl/cpu
-```
-
-**Errore SSL `CERTIFICATE_VERIFY_FAILED` durante il download del modello di embedding**
-Tipico di reti aziendali con proxy/filtro SSL (es. ZScaler). Risolvibile con:
-```bash
-pip install pip-system-certs
-```
-Questo fa sì che Python usi l'archivio certificati di Windows invece del proprio elenco interno.
-
-**Errore `403 Forbidden` da huggingface.co anche dopo aver risolto l'SSL**
-Significa che la rete aziendale blocca esplicitamente il dominio. Scarica il modello su un PC senza restrizioni di rete e copia la cartella `~/.cache/huggingface/hub/models--sentence-transformers--all-MiniLM-L6-v2` nello stesso percorso sul PC con restrizioni.
-
 **Le schede in alto mostrano il testo tagliato**
 Problema di rendering di Qt in combinazione con `letter-spacing` nel foglio di stile. Già risolto rimuovendo quella proprietà dal tema.
 
