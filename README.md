@@ -102,14 +102,14 @@ pip install torch --index-url https://download.pytorch.org/whl/cpu
 ```
 
 **Errore SSL `CERTIFICATE_VERIFY_FAILED` durante il download del modello di embedding**
-Tipico di reti aziendali con proxy/filtro SSL (es. ZScaler). Risolvibile con:
+Tipico di reti con proxy/filtro SSL. Risolvibile con:
 ```bash
 pip install pip-system-certs
 ```
 Questo fa sì che Python usi l'archivio certificati di Windows invece del proprio elenco interno.
 
 **Errore `403 Forbidden` da huggingface.co anche dopo aver risolto l'SSL**
-Significa che la rete aziendale blocca esplicitamente il dominio. Scarica il modello su un PC senza restrizioni di rete e copia la cartella `~/.cache/huggingface/hub/models--sentence-transformers--all-MiniLM-L6-v2` nello stesso percorso sul PC con restrizioni.
+Significa che la rete blocca esplicitamente il dominio. Scarica il modello su un PC senza restrizioni di rete e copia la cartella `~/.cache/huggingface/hub/models--sentence-transformers--all-MiniLM-L6-v2` nello stesso percorso sul PC con restrizioni.
 
 **Le schede in alto mostrano il testo tagliato**
 Problema di rendering di Qt in combinazione con `letter-spacing` nel foglio di stile. Già risolto rimuovendo quella proprietà dal tema.
