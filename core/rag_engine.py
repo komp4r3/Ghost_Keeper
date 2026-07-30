@@ -54,15 +54,15 @@ class MotoreRAG:
         )
 
         self.collezione = self.client.get_or_create_collection(
-            name="documenti_axiom",
+            name="documenti_ghostkeeper",
             embedding_function=self.funzione_embedding,
         )
 
     def svuota_indice(self) -> None:
         """Elimina tutti i documenti indicizzati, per poter reindicizzare da zero."""
-        self.client.delete_collection("documenti_axiom")
+        self.client.delete_collection("documenti_ghostkeeper")
         self.collezione = self.client.get_or_create_collection(
-            name="documenti_axiom",
+            name="documenti_ghostkeeper",
             embedding_function=self.funzione_embedding,
         )
 

@@ -56,6 +56,30 @@ class ThreadIndicizzazione(QThread):
             self.errore.emit(str(e))
 
 
+class ThreadInizializzazioneMotore(QThread):
+    """Crea il motore RAG in background: se il modello di embedding non e'
+    ancora in cache locale, la libreria puo' provare a contattare Hugging
+    Face per verificarne la versione, operazione che su reti aziendali con
+    filtri (es. ZScaler) puo' bloccarsi per diversi secondi prima di
+    fallire. Eseguendola qui, l'interfaccia resta comunque reattiva."""
+
+    completato = pyqtSignal(object, int)
+    errore = pyqtSignal(str)
+
+    def __init__(self, percorso_db: str, nome_modello_embedding: str):
+        super().__init__()
+        self.percorso_db = percorso_db
+        self.nome_modello_embedding = nome_modello_embedding
+
+    def run(self):
+        try:
+            motore_rag = MotoreRAG(self.percorso_db, self.nome_modello_embedding)
+            numero_doc = motore_rag.numero_documenti_indicizzati()
+            self.completato.emit(motore_rag, numero_doc)
+        except Exception as e:
+            self.errore.emit(str(e))
+
+
 class SchedaConoscenza(QWidget):
 
     motore_pronto = pyqtSignal(object)  # emesso quando il motore RAG e' inizializzato/aggiornato
@@ -65,6 +89,7 @@ class SchedaConoscenza(QWidget):
         self.config = config
         self.motore_rag = None
         self.thread_indicizzazione = None
+        self.thread_inizializzazione = None
         self._costruisci_interfaccia()
         self._inizializza_motore()
         self._valida_cartella()
@@ -145,18 +170,27 @@ class SchedaConoscenza(QWidget):
             self.etichetta_validazione.setStyleSheet(f"color: {VERDE_OK};")
 
     def _inizializza_motore(self):
-        """Crea il motore RAG (puo' richiedere qualche secondo la prima
-        volta, perche' carica il modello di embedding)."""
+        """Avvia l'inizializzazione del motore RAG in background (puo'
+        richiedere qualche secondo la prima volta, sia per il caricamento
+        del modello di embedding sia per un eventuale tentativo di verifica
+        online che su reti con filtri aziendali puo' essere lento)."""
         self.area_log.append("[SISTEMA] Inizializzazione unita' di ricerca semantica...")
-        try:
-            self.motore_rag = MotoreRAG(CHROMA_DB_PATH, self.config["modello_embedding"])
-            numero_doc = self.motore_rag.numero_documenti_indicizzati()
-            self.area_log.append(
-                f"[SISTEMA] Unita' pronta. Frammenti gia' negli archivi: {numero_doc}."
-            )
-            self.motore_pronto.emit(self.motore_rag)
-        except Exception as e:
-            self.area_log.append(f"[ERRORE] Inizializzazione unita' RAG fallita: {e}")
+        self.thread_inizializzazione = ThreadInizializzazioneMotore(
+            CHROMA_DB_PATH, self.config["modello_embedding"]
+        )
+        self.thread_inizializzazione.completato.connect(self._motore_inizializzato)
+        self.thread_inizializzazione.errore.connect(self._errore_inizializzazione_motore)
+        self.thread_inizializzazione.start()
+
+    def _motore_inizializzato(self, motore_rag, numero_doc: int):
+        self.motore_rag = motore_rag
+        self.area_log.append(
+            f"[SISTEMA] Unita' pronta. Frammenti gia' negli archivi: {numero_doc}."
+        )
+        self.motore_pronto.emit(self.motore_rag)
+
+    def _errore_inizializzazione_motore(self, messaggio: str):
+        self.area_log.append(f"[ERRORE] Inizializzazione unita' RAG fallita: {messaggio}")
 
     def _avvia_indicizzazione(self):
         if self.motore_rag is None:

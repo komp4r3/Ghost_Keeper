@@ -1,7 +1,7 @@
 """
 config.py
 ---------
-Configurazione centrale di Axiom.
+Configurazione centrale di GhostKeeper.
 Gestisce il caricamento/salvataggio delle impostazioni utente in un file JSON
 locale, cosi' da non perdere le preferenze tra un avvio e l'altro.
 """
@@ -11,7 +11,7 @@ import os
 from pathlib import Path
 
 # Cartella dati dell'applicazione (accanto all'eseguibile / allo script)
-APP_DIR = Path.home() / ".axiom"
+APP_DIR = Path.home() / ".ghostkeeper"
 APP_DIR.mkdir(parents=True, exist_ok=True)
 
 CONFIG_PATH = APP_DIR / "config.json"
@@ -22,7 +22,7 @@ DEFAULT_CONFIG = {
     "ollama_url": "http://localhost:11434",
     "modello_llm": "llama3.2:3b",
     "modello_embedding": "all-MiniLM-L6-v2",
-    "cartella_documenti": str(Path.home() / "Axiom_Documenti"),
+    "cartella_documenti": str(Path.home() / "GhostKeeper_Documenti"),
     "dimensione_chunk": 800,
     "sovrapposizione_chunk": 120,
     "numero_risultati_ricerca": 4,

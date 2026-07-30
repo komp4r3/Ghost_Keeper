@@ -67,7 +67,7 @@ class FinestraPrincipale(QMainWindow):
         super().__init__()
         self.config = config
 
-        self.setWindowTitle("A.X.I.O.M. // TERMINALE DI ACCESSO v1.0")
+        self.setWindowTitle("GHOSTKEEPER // TERMINALE DI ACCESSO v1.0")
         self.setWindowIcon(icona_applicazione())
         self.resize(1000, 680)
 

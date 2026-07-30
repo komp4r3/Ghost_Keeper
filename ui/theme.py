@@ -1,7 +1,7 @@
 """
 theme.py
 --------
-Tema visivo "Terminale Vault" per Axiom: estetica da terminale
+Tema visivo "Terminale Vault" per GhostKeeper: estetica da terminale
 post-apocalittico stile Fallout — verde fosforescente su sfondo nero,
 font monospace, bordi netti, in coerenza con il tuo Pip-Boy simulator.
 

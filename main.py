@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Axiom
+GhostKeeper
 ==========
 Assistente AI offline con base di conoscenza personale, ispirato a
 Project N.O.M.A.D. ma in versione leggera:
@@ -40,7 +40,7 @@ from ui.theme import STILE_TERMINALE
 
 def main():
     app = QApplication(sys.argv)
-    app.setApplicationName("Axiom")
+    app.setApplicationName("GhostKeeper")
     app.setStyle("Fusion")  # Necessario su Windows: lo stile nativo ignora
                             # parzialmente i colori personalizzati del QSS
     app.setStyleSheet(STILE_TERMINALE)

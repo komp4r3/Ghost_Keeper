@@ -29,17 +29,17 @@ from core.llm_client import ClienteOllama, ErroreConnessioneOllama
 from ui.icons import crea_etichetta_mascotte
 
 VERDE_UTENTE = "#8fffb0"   # verde chiaro per distinguere l'utente
-VERDE_AXIOM = "#33ff66"    # verde principale per le risposte di Axiom
+VERDE_GHOSTKEEPER = "#33ff66"    # verde principale per le risposte di GhostKeeper
 GRIGIO_SISTEMA = "#5a8a68"  # per messaggi di sistema/contesto, meno invadenti
 
 # Sequenza di righe mostrate all'avvio, per un effetto "boot" da terminale
 SEQUENZA_AVVIO = [
-    "INIZIALIZZAZIONE SISTEMA A.X.I.O.M....",
+    "INIZIALIZZAZIONE SISTEMA GHOSTKEEPER...",
     "CARICAMENTO MODULI COGNITIVI... OK",
     "VERIFICA ARCHIVI LOCALI... OK",
     "COLLEGAMENTO UNITA' DI INFERENZA...",
     "================================================",
-    "  A.X.I.O.M. - ASSISTENTE COGNITIVO OFFLINE",
+    "  GHOSTKEEPER - ASSISTENTE COGNITIVO OFFLINE",
     "  Sistema pronto. In attesa di input.",
     "================================================",
 ]
@@ -145,7 +145,7 @@ class SchedaChat(QWidget):
     def _mostra_prossima_riga_boot(self):
         if self._indice_boot < len(SEQUENZA_AVVIO):
             riga = SEQUENZA_AVVIO[self._indice_boot]
-            self.area_conversazione.append(f"<pre style='color:{VERDE_AXIOM};'>{riga}</pre>")
+            self.area_conversazione.append(f"<pre style='color:{VERDE_GHOSTKEEPER};'>{riga}</pre>")
             self._indice_boot += 1
         else:
             self._timer_boot.stop()
@@ -167,7 +167,7 @@ class SchedaChat(QWidget):
             )
             return
 
-        percorso_suggerito = f"axiom_conversazione_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        percorso_suggerito = f"ghostkeeper_conversazione_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
         percorso, _ = QFileDialog.getSaveFileName(
             self, "Esporta conversazione", percorso_suggerito, "File di testo (*.txt)"
         )
@@ -176,7 +176,7 @@ class SchedaChat(QWidget):
 
         righe = []
         for messaggio in self.cronologia:
-            etichetta = "UTENTE" if messaggio["role"] == "user" else "AXIOM"
+            etichetta = "UTENTE" if messaggio["role"] == "user" else "GHOSTKEEPER"
             righe.append(f"[{etichetta}]\n{messaggio['content']}\n")
 
         try:
@@ -224,7 +224,7 @@ class SchedaChat(QWidget):
                 )
 
         self.cronologia.append({"role": "user", "content": prompt_finale})
-        self.area_conversazione.append(f"<b style='color:{VERDE_AXIOM};'>&gt; AXIOM:</b> ")
+        self.area_conversazione.append(f"<b style='color:{VERDE_GHOSTKEEPER};'>&gt; GHOSTKEEPER:</b> ")
 
         cliente = ClienteOllama(self.config["ollama_url"])
         self.thread_corrente = ThreadRisposta(
