@@ -92,11 +92,30 @@ def suddividi_in_chunk(
     return chunk_list
 
 
-def carica_cartella(cartella: str, dimensione_chunk: int, sovrapposizione: int) -> List[Chunk]:
+def conta_file_supportati(cartella: str) -> int:
+    """Conta quanti file supportati sono presenti in una cartella (ricorsivamente).
+    Usato per dare un riscontro visivo immediato prima di avviare la scansione."""
+    root = Path(cartella)
+    if not root.exists() or not root.is_dir():
+        return -1  # cartella inesistente
+
+    return sum(
+        1
+        for percorso in root.rglob("*")
+        if percorso.is_file() and percorso.suffix.lower() in ESTENSIONI_SUPPORTATE
+    )
+
+
+def carica_cartella(
+    cartella: str, dimensione_chunk: int, sovrapposizione: int, callback_file=None
+) -> List[Chunk]:
     """
     Scansiona ricorsivamente una cartella, estrae il testo di ogni documento
     supportato e restituisce l'elenco completo dei chunk pronti per
     l'indicizzazione.
+
+    callback_file: funzione opzionale chiamata con il nome del file appena
+    letto, utile per mostrare un riscontro visivo durante la scansione.
     """
     root = Path(cartella)
     if not root.exists():
@@ -106,6 +125,9 @@ def carica_cartella(cartella: str, dimensione_chunk: int, sovrapposizione: int) 
 
     for percorso in sorted(root.rglob("*")):
         if percorso.is_file() and percorso.suffix.lower() in ESTENSIONI_SUPPORTATE:
+            if callback_file:
+                callback_file(str(percorso.relative_to(root)))
+
             try:
                 testo = estrai_testo(percorso)
             except Exception:

@@ -25,11 +25,15 @@ from PyQt5.QtWidgets import QApplication
 
 from config import carica_config
 from ui.main_window import FinestraPrincipale
+from ui.theme import STILE_TERMINALE
 
 
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Axiom")
+    app.setStyle("Fusion")  # Necessario su Windows: lo stile nativo ignora
+                            # parzialmente i colori personalizzati del QSS
+    app.setStyleSheet(STILE_TERMINALE)
 
     config = carica_config()
 

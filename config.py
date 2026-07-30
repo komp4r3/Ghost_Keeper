@@ -27,6 +27,7 @@ DEFAULT_CONFIG = {
     "sovrapposizione_chunk": 120,
     "numero_risultati_ricerca": 4,
     "temperatura": 0.4,
+    "ultima_scheda": 0,
 }
 
 

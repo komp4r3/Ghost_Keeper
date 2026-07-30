@@ -11,8 +11,15 @@ da mantenere.
 
 Gli embedding vengono generati con sentence-transformers (modello leggero
 "all-MiniLM-L6-v2", ~90MB, gira bene anche solo su CPU).
+
+Nota su reti aziendali con proxy/filtro (es. ZScaler): se il modello e'
+gia' presente nella cache locale di Hugging Face (~/.cache/huggingface),
+viene impostata la modalita' offline per evitare tentativi di connessione
+che potrebbero essere bloccati dal filtro di rete.
 """
 
+import os
+from pathlib import Path
 from typing import List
 import chromadb
 from chromadb.utils import embedding_functions
@@ -20,11 +27,27 @@ from chromadb.utils import embedding_functions
 from core.document_loader import Chunk, carica_cartella
 
 
+def _modello_gia_in_cache(nome_modello: str) -> bool:
+    """Controlla se il modello e' gia' stato scaricato in precedenza."""
+    cache_hf = Path.home() / ".cache" / "huggingface" / "hub"
+    nome_cartella = f"models--sentence-transformers--{nome_modello}"
+    return (cache_hf / nome_cartella).exists()
+
+
 class MotoreRAG:
     """Gestisce l'indicizzazione dei documenti e la ricerca semantica."""
 
     def __init__(self, percorso_db: str, nome_modello_embedding: str = "all-MiniLM-L6-v2"):
         self.client = chromadb.PersistentClient(path=percorso_db)
+
+        # Se il modello e' gia' stato scaricato in precedenza (es. copiato da
+        # un altro PC senza restrizioni di rete), si forza la modalita'
+        # offline per evitare che la libreria tenti comunque di contattare
+        # Hugging Face, cosa che su reti con proxy aziendale (es. ZScaler)
+        # puo' bloccarsi con errori di certificato o accesso negato.
+        if _modello_gia_in_cache(nome_modello_embedding):
+            os.environ["HF_HUB_OFFLINE"] = "1"
+            os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
         self.funzione_embedding = embedding_functions.SentenceTransformerEmbeddingFunction(
             model_name=nome_modello_embedding
@@ -52,15 +75,21 @@ class MotoreRAG:
         dimensione_chunk: int,
         sovrapposizione: int,
         callback_progresso=None,
+        callback_file=None,
     ) -> int:
         """
         Legge tutti i documenti supportati nella cartella indicata, li
         suddivide in chunk e li salva nel database vettoriale.
 
         callback_progresso: funzione opzionale chiamata con (fatti, totale)
-        per aggiornare una barra di progresso nell'interfaccia.
+        per aggiornare una barra di progresso nell'interfaccia (fase di
+        indicizzazione vera e propria).
+        callback_file: funzione opzionale chiamata col nome del file in
+        lettura (fase di scansione/estrazione testo).
         """
-        chunk_list: List[Chunk] = carica_cartella(cartella, dimensione_chunk, sovrapposizione)
+        chunk_list: List[Chunk] = carica_cartella(
+            cartella, dimensione_chunk, sovrapposizione, callback_file=callback_file
+        )
 
         if not chunk_list:
             return 0
