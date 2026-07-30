@@ -1,0 +1,24 @@
+# Ambiente virtuale Python
+venv/
+env/
+.venv/
+
+# Cache Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Dati locali dell'utente (config, database vettoriale) - NON vanno su GitHub
+# perche' specifici del singolo PC/utente
+*.egg-info/
+
+# File di sistema
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Eventuali documenti personali indicizzati (se tenuti dentro il repo per errore)
+Axiom_Documenti/
