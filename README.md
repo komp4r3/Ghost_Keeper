@@ -66,30 +66,58 @@ python main.py
 1. **Scheda "Comunicazione" (Chat)**: fai le tue domande. Se la casella "Attiva ricerca negli archivi locali" è attiva, l'AI cercherà prima nei tuoi documenti e citerà le fonti. `Ctrl+L` pulisce la conversazione, il pulsante "Esporta" la salva in un file di testo.
 2. **Scheda "Archivi" (Base di Conoscenza)**: scegli la cartella con i tuoi documenti e premi "Avvia scansione archivi". Un'icona colorata ti conferma subito se la cartella è valida e quanti file supportati contiene.
 3. **Scheda "Enciclopedia"**: scarica un archivio ZIM da [library.kiwix.org](https://library.kiwix.org/) — ti consiglio una versione **"nopic"** (solo testo, senza immagini), molto più leggera e stabile della versione "maxi" completa — e caricalo con "Sfoglia". Poi cerca liberamente, naviga tra i link interni o premi "Voce Casuale". Il pulsante "Pagina Principale" apre la home dell'archivio (può essere più lenta delle voci singole, essendo tipicamente la pagina più complessa).
-4. **Scheda "Configurazione" (Impostazioni)**: cambia modello, temperatura, dimensione dei blocchi di testo o numero di estratti recuperati per ogni domanda. Raggiungibile anche con `Ctrl+K` da qualsiasi scheda.
+4. **Scheda "Cartografia"**: carica un file `.mbtiles` (generabile con MOBAC) e naviga per coordinate/zoom o trascinando con il mouse l'area già caricata.
+5. **Scheda "Formazione"**: crea un corso, aggiungi lezioni in Markdown, poi premi "Genera Quiz con AI" per far generare al modello locale delle domande di verifica. I progressi vengono tracciati automaticamente.
+6. **Scheda "Strumenti Dati"**: componi una ricetta di operazioni (doppio click per aggiungerle) e premi "Esegui Ricetta" per trasformare il testo in sequenza — utile per debug seriale, encoding, hash.
+7. **Scheda "Configurazione" (Impostazioni)**: cambia modello, temperatura, dimensione dei blocchi di testo o numero di estratti recuperati per ogni domanda. Raggiungibile anche con `Ctrl+K` da qualsiasi scheda.
 
-La barra in fondo alla finestra mostra sempre se Ollama è raggiungibile e quale modello è attivo. L'app ricorda l'ultima scheda aperta al riavvio.
+La barra in fondo alla finestra mostra sempre se Ollama è raggiungibile e quale modello è attivo, insieme a un piccolo monitor di sistema (CPU/RAM/Disco, stile Pip-Boy) e all'orologio live. L'app ricorda l'ultima scheda aperta al riavvio, e mostra un breve splash screen animato all'apertura.
+
+## Estetica terminale Vault-Tec
+
+- **Splash screen animato** all'avvio, con sequenza di boot e barra di progresso
+- **Scanline CRT** semi-trasparenti su tutta la finestra, con leggera vignettatura ai bordi
+- **Bagliore fosforescente** sulle intestazioni di ogni scheda
+- **Boot sequence a macchina da scrivere** (lettera per lettera) nella chat
+- **Separatori a strisce** diagonali stile segnaletica di pericolo, sotto ogni intestazione
+- **Notifiche toast** in stile terminale al posto dei popup Windows standard
+- **Monitor di sistema stile Pip-Boy** e **orologio live** nella barra di stato
+- **Mascotte originale** (fantasmino con espressione fiera, coerente con l'identità visiva degli altri progetti "Ghost" dell'autore) e **icone disegnate a runtime** per ogni scheda
 
 ## Struttura del progetto
 
 ```
 ghostkeeper/
-├── main.py                  # punto di ingresso dell'applicazione
-├── config.py                 # gestione configurazione utente
+├── main.py                    # punto di ingresso dell'applicazione
+├── config.py                  # gestione configurazione utente
 ├── requirements.txt
+├── packaging/                 # file per creare l'eseguibile e l'installer Windows
+│   ├── ghostkeeper.spec        # spec file di PyInstaller
+│   ├── ghostkeeper.iss          # script Inno Setup per l'installer
+│   └── installa_ollama.ps1     # script di download/installazione automatica di Ollama
 ├── core/
-│   ├── llm_client.py         # comunicazione con Ollama (streaming)
-│   ├── document_loader.py    # estrazione testo da PDF/DOCX/TXT/MD + chunking
-│   ├── rag_engine.py         # indicizzazione ed embedding con ChromaDB
-│   └── kiwix_reader.py       # lettura archivi ZIM (Wikipedia offline) con libzim
+│   ├── llm_client.py          # comunicazione con Ollama (streaming + non-streaming)
+│   ├── document_loader.py     # estrazione testo da PDF/DOCX/TXT/MD + chunking
+│   ├── rag_engine.py          # indicizzazione ed embedding con ChromaDB
+│   ├── kiwix_reader.py        # lettura archivi ZIM (Wikipedia offline) con libzim
+│   ├── mbtiles_reader.py      # lettura mappe offline in formato MBTiles
+│   ├── education_manager.py   # gestione corsi/lezioni/quiz della piattaforma educativa
+│   └── data_tools.py          # operazioni di trasformazione dati stile CyberChef
 └── ui/
-    ├── main_window.py        # finestra principale (schede, barra di stato, scorciatoie)
-    ├── chat_tab.py           # scheda chat (boot sequence, esportazione, colori)
-    ├── knowledge_tab.py      # scheda base di conoscenza (validazione cartella, progresso)
-    ├── wikipedia_tab.py      # scheda enciclopedia offline (Kiwix/ZIM)
-    ├── settings_tab.py       # scheda impostazioni
-    ├── theme.py              # foglio di stile QSS (estetica terminale Vault-Tec)
-    └── icons.py               # icone e mascotte disegnate a runtime con QPainter
+    ├── main_window.py         # finestra principale (schede, barra di stato, scorciatoie)
+    ├── chat_tab.py            # scheda chat (boot sequence, esportazione, colori)
+    ├── knowledge_tab.py       # scheda base di conoscenza (validazione cartella, progresso)
+    ├── wikipedia_tab.py       # scheda enciclopedia offline (Kiwix/ZIM)
+    ├── maps_tab.py            # scheda cartografia offline (MBTiles)
+    ├── education_tab.py       # scheda formazione (corsi, lezioni, quiz)
+    ├── data_tools_tab.py      # scheda strumenti dati (ricette CyberChef-style)
+    ├── settings_tab.py        # scheda impostazioni
+    ├── theme.py               # foglio di stile QSS (estetica terminale Vault-Tec)
+    ├── icons.py               # icone e mascotte disegnate a runtime con QPainter
+    ├── effects.py             # scanline CRT, bagliore fosforescente, separatori a strisce
+    ├── splash_screen.py       # splash screen animato all'avvio
+    ├── system_monitor.py      # monitor di sistema stile Pip-Boy (CPU/RAM/Disco)
+    └── toast.py               # notifiche toast in stile terminale
 ```
 
 I dati dell'utente (configurazione e database vettoriale) vengono salvati in `~/.ghostkeeper/`, separati dal codice sorgente.
@@ -121,9 +149,9 @@ Problema di rendering di Qt in combinazione con `letter-spacing` nel foglio di s
 
 ## Possibili estensioni future
 
-- Packaging come eseguibile standalone con PyInstaller (come hai già fatto per l'IGV configurator)
 - Supporto a più collezioni/knowledge base separate (es. "lavoro" e "hobby")
-- Effetto scanline/flicker visivo sopra la finestra
+- Cronologia delle conversazioni salvate su disco (oltre all'esportazione manuale)
+- Effetto "glitch" occasionale sul testo per un tocco in più
 
 ## Creare un installer Windows (con Ollama incluso)
 
