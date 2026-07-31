@@ -31,11 +31,13 @@ Requisiti:
 import libzim  # noqa: F401
 
 import sys
+from PyQt5.QtCore import QTimer
 from PyQt5.QtWidgets import QApplication
 
 from config import carica_config
 from ui.main_window import FinestraPrincipale
 from ui.theme import STILE_TERMINALE
+from ui.splash_screen import SplashScreenGhostKeeper
 
 
 def main():
@@ -45,10 +47,24 @@ def main():
                             # parzialmente i colori personalizzati del QSS
     app.setStyleSheet(STILE_TERMINALE)
 
+    splash = SplashScreenGhostKeeper()
+    splash.show()
+    app.processEvents()
+
     config = carica_config()
 
     finestra = FinestraPrincipale(config)
-    finestra.show()
+
+    def mostra_finestra_principale():
+        # Aspetta che la sequenza di avvio dello splash sia completa prima
+        # di aprire la finestra principale, per un effetto di boot pulito
+        if splash.sequenza_completata():
+            splash.close()
+            finestra.show()
+        else:
+            QTimer.singleShot(100, mostra_finestra_principale)
+
+    QTimer.singleShot(100, mostra_finestra_principale)
 
     sys.exit(app.exec_())
 

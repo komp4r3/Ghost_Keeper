@@ -8,8 +8,9 @@ modello, e alcune scorciatoie da tastiera comode.
 """
 
 import time
+from datetime import datetime
 
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtCore import Qt, QThread, pyqtSignal, QTimer
 from PyQt5.QtWidgets import QMainWindow, QTabWidget, QShortcut, QLabel
 from PyQt5.QtGui import QKeySequence
 
@@ -32,6 +33,7 @@ from ui.icons import (
     icona_applicazione,
 )
 from ui.effects import SovrapposizioneScanline
+from ui.system_monitor import MonitorSistema
 from core.llm_client import ClienteOllama
 
 VERDE_OK = "#33ff66"
@@ -132,10 +134,27 @@ class FinestraPrincipale(QMainWindow):
     def _costruisci_barra_stato(self):
         """Etichetta permanente in fondo alla finestra che mostra se Ollama
         e' raggiungibile e quale modello e' impostato, senza dover aprire
-        la chat per scoprirlo."""
+        la chat per scoprirlo. Include anche un orologio live e un
+        piccolo monitor di sistema stile Pip-Boy."""
         self.etichetta_stato = QLabel("● Verifica connessione Ollama in corso...")
         self.etichetta_stato.setStyleSheet(f"color: {ROSSO_ERRORE}; padding: 4px 8px;")
         self.statusBar().addPermanentWidget(self.etichetta_stato, 1)
+
+        self.monitor_sistema = MonitorSistema()
+        self.statusBar().addPermanentWidget(self.monitor_sistema)
+
+        self.etichetta_orologio = QLabel("")
+        self.etichetta_orologio.setStyleSheet(f"color: {VERDE_OK}; padding: 4px 10px; font-family: Consolas, monospace;")
+        self.statusBar().addPermanentWidget(self.etichetta_orologio)
+
+        self._timer_orologio = QTimer(self)
+        self._timer_orologio.timeout.connect(self._aggiorna_orologio)
+        self._timer_orologio.start(1000)
+        self._aggiorna_orologio()
+
+    def _aggiorna_orologio(self):
+        adesso = datetime.now()
+        self.etichetta_orologio.setText(adesso.strftime("%d/%m/%Y  %H:%M:%S"))
 
     def _configura_scorciatoie(self):
         """Ctrl+K passa direttamente alla scheda Configurazione, comoda

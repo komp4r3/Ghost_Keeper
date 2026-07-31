@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
 
 from config import salva_config
 from core.llm_client import ClienteOllama, ErroreConnessioneOllama
+from ui.toast import mostra_toast
 from ui.effects import applica_bagliore, SeparatoreStrisce
 
 
@@ -126,15 +127,17 @@ class SchedaImpostazioni(QWidget):
             self.combo_modello.clear()
             if modelli:
                 self.combo_modello.addItems(modelli)
+                mostra_toast(self, f"Rilevati {len(modelli)} modelli.", tipo="successo")
             else:
-                QMessageBox.information(
+                mostra_toast(
                     self,
-                    "Nessun modello trovato",
-                    "Ollama e' raggiungibile ma non risultano modelli scaricati.\n"
-                    "Scaricane uno da terminale, ad esempio: ollama pull llama3.2:3b",
+                    "Ollama e' raggiungibile ma non risultano modelli scaricati. "
+                    "Scaricane uno con: ollama pull llama3.2:3b",
+                    tipo="avviso",
+                    durata_ms=5000,
                 )
         except ErroreConnessioneOllama as e:
-            QMessageBox.warning(self, "Connessione non riuscita", str(e))
+            mostra_toast(self, f"Connessione non riuscita: {e}", tipo="errore", durata_ms=5000)
 
     def _salva(self):
         self.config["ollama_url"] = self.campo_url_ollama.text().strip()
@@ -145,4 +148,4 @@ class SchedaImpostazioni(QWidget):
         self.config["numero_risultati_ricerca"] = self.campo_numero_risultati.value()
 
         salva_config(self.config)
-        QMessageBox.information(self, "Impostazioni salvate", "Le impostazioni sono state salvate.")
+        mostra_toast(self, "Impostazioni salvate.", tipo="successo")

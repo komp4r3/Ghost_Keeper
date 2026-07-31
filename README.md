@@ -125,6 +125,43 @@ Problema di rendering di Qt in combinazione con `letter-spacing` nel foglio di s
 - Supporto a più collezioni/knowledge base separate (es. "lavoro" e "hobby")
 - Effetto scanline/flicker visivo sopra la finestra
 
+## Creare un installer Windows (con Ollama incluso)
+
+È possibile creare un vero installer (`GhostKeeper_Setup.exe`) che, oltre a installare l'app, scarica e installa Ollama automaticamente e scarica il modello AI di default — così chi lo riceve non deve seguire nessuna delle istruzioni di installazione manuale sopra.
+
+**Passo 1 — Crea l'eseguibile standalone con PyInstaller**
+
+```bash
+pip install pyinstaller
+pyinstaller packaging/ghostkeeper.spec
+```
+
+Al termine, troverai l'app completa (eseguibile + librerie) in `dist/GhostKeeper/`. Verifica che `dist/GhostKeeper/GhostKeeper.exe` parta correttamente prima di proseguire — in particolare controlla che la scheda Enciclopedia funzioni (l'ordine di import `libzim`/PyQt5 deve restare corretto anche nell'eseguibile impacchettato).
+
+**Passo 2 — Installa Inno Setup**
+
+Scarica e installa [Inno Setup](https://jrsoftware.org/isinfo.php) (gratuito).
+
+**Passo 3 — Compila l'installer**
+
+Apri `packaging/ghostkeeper.iss` con Inno Setup Compiler e premi "Compile" (oppure da riga di comando: `ISCC.exe packaging\ghostkeeper.iss`).
+
+L'installer finale (`GhostKeeper_Setup.exe`) verrà creato in `packaging/output/`.
+
+**Cosa fa l'installer:**
+1. Copia i file dell'app in Program Files
+2. Crea le icone su Desktop/Menu Start
+3. Scarica silenziosamente `OllamaSetup.exe` da ollama.com
+4. Lo installa in modalità silenziosa (`/VERYSILENT`)
+5. Attende che il servizio Ollama sia attivo
+6. Scarica automaticamente il modello `llama3.2:3b`
+
+⚠️ **Note importanti:**
+- Serve una connessione internet attiva durante l'installazione (per scaricare Ollama + il modello, alcuni GB in totale)
+- Serve eseguire l'installer come amministratore
+- Questo processo non è stato testato end-to-end (richiede Windows + Inno Setup): la sintassi degli script è stata verificata, ma la prima esecuzione reale va controllata passo per passo — se qualcosa non funziona come previsto, sistemiamolo insieme
+- L'eseguibile PyInstaller sarà piuttosto pesante (centinaia di MB), perché include PyTorch e le altre librerie AI
+
 ## Requisiti hardware indicativi
 
 - **Minimo**: CPU moderna a 4+ core, 8GB RAM, modello da 3B parametri (risposte un po' lente ma utilizzabili)

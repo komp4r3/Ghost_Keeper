@@ -39,6 +39,7 @@ from core.education_manager import (
     interpreta_risposta_quiz,
 )
 from core.llm_client import ClienteOllama, ErroreConnessioneOllama
+from ui.toast import mostra_toast
 from ui.effects import applica_bagliore, SeparatoreStrisce
 
 VERDE_OK = "#33ff66"
@@ -260,7 +261,7 @@ class SchedaFormazione(QWidget):
 
     def _nuova_lezione(self):
         if self.corso_selezionato is None:
-            QMessageBox.information(self, "Nessun corso selezionato", "Seleziona prima un corso.")
+            mostra_toast(self, "Seleziona prima un corso.", tipo="avviso")
             return
 
         dialogo = DialogoNuovaLezione(self)
@@ -326,7 +327,7 @@ class SchedaFormazione(QWidget):
 
     def _genera_quiz(self):
         if self.lezione_selezionata is None:
-            QMessageBox.information(self, "Nessuna lezione", "Seleziona prima una lezione.")
+            mostra_toast(self, "Seleziona prima una lezione.", tipo="avviso")
             return
 
         self.pulsante_genera_quiz.setEnabled(False)
@@ -352,7 +353,7 @@ class SchedaFormazione(QWidget):
     def _errore_generazione_quiz(self, messaggio: str):
         self.pulsante_genera_quiz.setEnabled(True)
         self.pulsante_genera_quiz.setText("GENERA QUIZ CON AI")
-        QMessageBox.warning(self, "Generazione quiz non riuscita", messaggio)
+        mostra_toast(self, f"Generazione quiz non riuscita: {messaggio}", tipo="errore", durata_ms=5000)
 
     def _verifica_quiz(self):
         if self.lezione_selezionata is None:
