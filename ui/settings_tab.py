@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
 
 from config import salva_config
 from core.llm_client import ClienteOllama, ErroreConnessioneOllama
+from ui.effects import applica_bagliore, SeparatoreStrisce
 
 
 class SchedaImpostazioni(QWidget):
@@ -34,7 +35,9 @@ class SchedaImpostazioni(QWidget):
 
         intestazione = QLabel("[ CONFIGURAZIONE DI SISTEMA ]")
         intestazione.setStyleSheet("font-size: 16px; font-weight: bold; letter-spacing: 2px;")
+        applica_bagliore(intestazione)
         layout.addWidget(intestazione)
+        layout.addWidget(SeparatoreStrisce())
 
         modulo = QFormLayout()
 

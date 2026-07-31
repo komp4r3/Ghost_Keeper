@@ -13,20 +13,25 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QTabWidget, QShortcut, QLabel
 from PyQt5.QtGui import QKeySequence
 
-from config import salva_config
+from config import salva_config, CORSI_JSON_PATH
 from ui.chat_tab import SchedaChat
 from ui.knowledge_tab import SchedaConoscenza
 from ui.settings_tab import SchedaImpostazioni
 from ui.wikipedia_tab import SchedaWikipedia
 from ui.maps_tab import SchedaMappe
+from ui.education_tab import SchedaFormazione
+from ui.data_tools_tab import SchedaStrumentiDati
 from ui.icons import (
     icona_comunicazione,
     icona_archivio,
     icona_configurazione,
     icona_enciclopedia,
     icona_mappa,
+    icona_formazione,
+    icona_strumenti_dati,
     icona_applicazione,
 )
+from ui.effects import SovrapposizioneScanline
 from core.llm_client import ClienteOllama
 
 VERDE_OK = "#33ff66"
@@ -85,6 +90,8 @@ class FinestraPrincipale(QMainWindow):
         self.scheda_chat = SchedaChat(config, motore_rag=None)
         self.scheda_wikipedia = SchedaWikipedia(config)
         self.scheda_mappe = SchedaMappe(config)
+        self.scheda_formazione = SchedaFormazione(config, CORSI_JSON_PATH)
+        self.scheda_strumenti_dati = SchedaStrumentiDati()
         self.scheda_impostazioni = SchedaImpostazioni(config)
 
         # Quando il motore RAG e' pronto (o aggiornato dopo un'indicizzazione),
@@ -95,6 +102,8 @@ class FinestraPrincipale(QMainWindow):
         self.schede.addTab(self.scheda_conoscenza, icona_archivio(), "  ARCHIVI  ")
         self.schede.addTab(self.scheda_wikipedia, icona_enciclopedia(), "  ENCICLOPEDIA  ")
         self.schede.addTab(self.scheda_mappe, icona_mappa(), "  CARTOGRAFIA  ")
+        self.schede.addTab(self.scheda_formazione, icona_formazione(), "  FORMAZIONE  ")
+        self.schede.addTab(self.scheda_strumenti_dati, icona_strumenti_dati(), "  STRUMENTI DATI  ")
         self.schede.addTab(self.scheda_impostazioni, icona_configurazione(), "  CONFIGURAZIONE  ")
 
         # Ripristina l'ultima scheda aperta nella sessione precedente
@@ -107,6 +116,18 @@ class FinestraPrincipale(QMainWindow):
         self._costruisci_barra_stato()
         self._configura_scorciatoie()
         self._avvia_controllo_connessione()
+
+        # Overlay scanline CRT: sempre sopra tutto il resto, non interferisce
+        # con i click grazie a WA_TransparentForMouseEvents
+        self.overlay_scanline = SovrapposizioneScanline(self)
+        self.overlay_scanline.resize(self.size())
+        self.overlay_scanline.raise_()
+
+    def resizeEvent(self, evento):
+        super().resizeEvent(evento)
+        if hasattr(self, "overlay_scanline"):
+            self.overlay_scanline.resize(self.size())
+            self.overlay_scanline.raise_()
 
     def _costruisci_barra_stato(self):
         """Etichetta permanente in fondo alla finestra che mostra se Ollama

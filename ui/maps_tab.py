@@ -32,6 +32,7 @@ from core.mbtiles_reader import (
     tile_a_coordinate,
 )
 from config import salva_config
+from ui.effects import applica_bagliore, SeparatoreStrisce
 
 VERDE_OK = "#33ff66"
 ROSSO_ERRORE = "#ff4433"
@@ -76,7 +77,9 @@ class SchedaMappe(QWidget):
 
         intestazione = QLabel("[ CARTOGRAFIA OFFLINE ]")
         intestazione.setStyleSheet("font-size: 16px; font-weight: bold; letter-spacing: 2px;")
+        applica_bagliore(intestazione)
         layout.addWidget(intestazione)
+        layout.addWidget(SeparatoreStrisce())
 
         descrizione = QLabel(
             "Carica un file di mappa offline in formato MBTiles (generabile con\n"

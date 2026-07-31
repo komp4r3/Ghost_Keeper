@@ -21,6 +21,7 @@ from PyQt5.QtWidgets import (
 from core.rag_engine import MotoreRAG
 from core.document_loader import conta_file_supportati
 from config import CHROMA_DB_PATH
+from ui.effects import applica_bagliore, SeparatoreStrisce
 
 VERDE_OK = "#33ff66"
 ROSSO_ERRORE = "#ff4433"
@@ -99,7 +100,9 @@ class SchedaConoscenza(QWidget):
 
         intestazione = QLabel("[ ARCHIVI DI CONOSCENZA ]")
         intestazione.setStyleSheet("font-size: 16px; font-weight: bold; letter-spacing: 2px;")
+        applica_bagliore(intestazione)
         layout.addWidget(intestazione)
+        layout.addWidget(SeparatoreStrisce())
 
         descrizione = QLabel(
             "Indica una directory con i tuoi documenti (PDF, DOCX, TXT, MD).\n"

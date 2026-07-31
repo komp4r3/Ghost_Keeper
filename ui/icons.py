@@ -264,6 +264,58 @@ def icona_mappa(dimensione: int = 24) -> QIcon:
     return QIcon(pixmap)
 
 
+def icona_formazione(dimensione: int = 24) -> QIcon:
+    """Icona a forma di cappello da laurea, per la scheda Formazione."""
+    pixmap = _nuovo_pixmap(dimensione)
+    p = _pittore(pixmap, 2)
+
+    centro_x = dimensione / 2
+    centro_y = dimensione * 0.42
+
+    # Base romboidale del cappello (vista dall'alto, stile mortarboard)
+    punti = [
+        QPointF(centro_x, dimensione * 0.22),
+        QPointF(dimensione * 0.90, centro_y),
+        QPointF(centro_x, dimensione * 0.62),
+        QPointF(dimensione * 0.10, centro_y),
+    ]
+    p.drawLine(punti[0], punti[1])
+    p.drawLine(punti[1], punti[2])
+    p.drawLine(punti[2], punti[3])
+    p.drawLine(punti[3], punti[0])
+
+    # Base del cappello (piccola fascia sotto il rombo)
+    fascia = QRectF(dimensione * 0.34, dimensione * 0.55, dimensione * 0.32, dimensione * 0.18)
+    p.drawArc(fascia, 0, -180 * 16)
+
+    # Cordoncino laterale con nappina
+    p.drawLine(QPointF(dimensione * 0.90, centro_y), QPointF(dimensione * 0.90, dimensione * 0.75))
+    p.setBrush(VERDE)
+    p.drawEllipse(QPointF(dimensione * 0.90, dimensione * 0.80), dimensione * 0.035, dimensione * 0.035)
+    p.setBrush(Qt.NoBrush)
+
+    p.end()
+    return QIcon(pixmap)
+
+
+def icona_strumenti_dati(dimensione: int = 24) -> QIcon:
+    """Icona con simboli binari/esadecimali stilizzati, per la scheda Strumenti Dati."""
+    pixmap = _nuovo_pixmap(dimensione)
+    p = _pittore(pixmap, 2)
+
+    margine = dimensione * 0.12
+    rettangolo = QRectF(margine, margine, dimensione - 2 * margine, dimensione - 2 * margine)
+    p.drawRoundedRect(rettangolo, 3, 3)
+
+    font = QFont("Consolas", int(dimensione * 0.20))
+    font.setBold(True)
+    p.setFont(font)
+    p.drawText(rettangolo, Qt.AlignCenter, "01\n1F")
+
+    p.end()
+    return QIcon(pixmap)
+
+
 def icona_applicazione(dimensione: int = 64) -> QIcon:
     """Icona per la finestra dell'applicazione, basata sulla mascotte."""
     return QIcon(disegna_mascotte(dimensione))

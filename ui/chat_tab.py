@@ -27,6 +27,7 @@ from PyQt5.QtGui import QKeySequence
 
 from core.llm_client import ClienteOllama, ErroreConnessioneOllama
 from ui.icons import crea_etichetta_mascotte
+from ui.effects import applica_bagliore, SeparatoreStrisce
 
 VERDE_UTENTE = "#8fffb0"   # verde chiaro per distinguere l'utente
 VERDE_GHOSTKEEPER = "#33ff66"    # verde principale per le risposte di GhostKeeper
@@ -90,6 +91,7 @@ class SchedaChat(QWidget):
         blocco_titolo = QVBoxLayout()
         intestazione = QLabel("[ TERMINALE DI COMUNICAZIONE ]")
         intestazione.setStyleSheet("font-size: 16px; font-weight: bold; letter-spacing: 2px;")
+        applica_bagliore(intestazione)
         blocco_titolo.addWidget(intestazione)
 
         self.casella_usa_rag = QCheckBox("ATTIVA RICERCA NEGLI ARCHIVI LOCALI (RAG)")
@@ -110,6 +112,7 @@ class SchedaChat(QWidget):
         riga_intestazione.addWidget(self.pulsante_esporta)
 
         layout.addLayout(riga_intestazione)
+        layout.addWidget(SeparatoreStrisce())
 
         self.area_conversazione = QTextEdit()
         self.area_conversazione.setReadOnly(True)
@@ -135,18 +138,27 @@ class SchedaChat(QWidget):
         scorciatoia_pulisci.activated.connect(self._pulisci_conversazione)
 
     def _avvia_sequenza_boot(self):
-        """Mostra le righe della sequenza di avvio una alla volta, con un
-        breve ritardo, per un effetto 'boot da terminale'."""
-        self._indice_boot = 0
-        self._timer_boot = QTimer(self)
-        self._timer_boot.timeout.connect(self._mostra_prossima_riga_boot)
-        self._timer_boot.start(180)  # millisecondi tra una riga e l'altra
+        """Mostra il testo della sequenza di avvio un carattere alla volta,
+        per un autentico effetto 'macchina da scrivere' da terminale."""
+        self._testo_boot_completo = "\n".join(SEQUENZA_AVVIO)
+        self._indice_carattere_boot = 0
 
-    def _mostra_prossima_riga_boot(self):
-        if self._indice_boot < len(SEQUENZA_AVVIO):
-            riga = SEQUENZA_AVVIO[self._indice_boot]
-            self.area_conversazione.append(f"<pre style='color:{VERDE_GHOSTKEEPER};'>{riga}</pre>")
-            self._indice_boot += 1
+        # Apre il blocco <pre> una sola volta, poi vi inserisce i
+        # caratteri uno alla volta senza riaprire un nuovo blocco ogni volta
+        self.area_conversazione.append(f"<pre style='color:{VERDE_GHOSTKEEPER};'>")
+
+        self._timer_boot = QTimer(self)
+        self._timer_boot.timeout.connect(self._mostra_prossimo_carattere_boot)
+        self._timer_boot.start(12)  # millisecondi tra un carattere e l'altro
+
+    def _mostra_prossimo_carattere_boot(self):
+        if self._indice_carattere_boot < len(self._testo_boot_completo):
+            carattere = self._testo_boot_completo[self._indice_carattere_boot]
+            cursore = self.area_conversazione.textCursor()
+            cursore.movePosition(cursore.End)
+            self.area_conversazione.setTextCursor(cursore)
+            self.area_conversazione.insertPlainText(carattere)
+            self._indice_carattere_boot += 1
         else:
             self._timer_boot.stop()
 

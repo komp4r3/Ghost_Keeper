@@ -33,6 +33,7 @@ from PyQt5.QtWidgets import (
 
 from core.kiwix_reader import LettoreKiwix, ErroreArchivioZim
 from config import salva_config
+from ui.effects import applica_bagliore, SeparatoreStrisce
 
 VERDE_OK = "#33ff66"
 ROSSO_ERRORE = "#ff4433"
@@ -167,7 +168,9 @@ class SchedaWikipedia(QWidget):
 
         intestazione = QLabel("[ ENCICLOPEDIA OFFLINE ]")
         intestazione.setStyleSheet("font-size: 16px; font-weight: bold; letter-spacing: 2px;")
+        applica_bagliore(intestazione)
         layout.addWidget(intestazione)
+        layout.addWidget(SeparatoreStrisce())
 
         descrizione = QLabel(
             "Carica un archivio Wikipedia (o altro) in formato ZIM, scaricabile da\n"

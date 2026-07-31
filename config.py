@@ -16,6 +16,7 @@ APP_DIR.mkdir(parents=True, exist_ok=True)
 
 CONFIG_PATH = APP_DIR / "config.json"
 CHROMA_DB_PATH = str(APP_DIR / "chroma_db")
+CORSI_JSON_PATH = str(APP_DIR / "corsi.json")
 
 # Valori di default: pensati per girare anche su hardware modesto
 DEFAULT_CONFIG = {

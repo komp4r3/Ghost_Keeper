@@ -47,6 +47,34 @@ class ClienteOllama:
                 f"Impossibile contattare Ollama su {self.url_base}: {e}"
             )
 
+    def chat_completa(
+        self,
+        modello: str,
+        messaggi: List[Dict[str, str]],
+        temperatura: float = 0.4,
+    ) -> str:
+        """
+        Come chat_streaming, ma attende la risposta completa e la
+        restituisce in un'unica stringa (comodo per generare contenuti
+        strutturati, es. domande di un quiz in formato JSON, dove non ha
+        senso mostrare la risposta pezzo per pezzo).
+        """
+        payload = {
+            "model": modello,
+            "messages": messaggi,
+            "stream": False,
+            "options": {"temperature": temperatura},
+        }
+
+        try:
+            r = requests.post(
+                f"{self.url_base}/api/chat", json=payload, timeout=self.timeout
+            )
+            r.raise_for_status()
+            dati = r.json()
+            return dati.get("message", {}).get("content", "")
+        except requests.exceptions.RequestException as e:
+            raise ErroreConnessioneOllama(f"Errore durante la generazione: {e}")
     def chat_streaming(
         self,
         modello: str,

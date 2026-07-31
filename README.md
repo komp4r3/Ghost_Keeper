@@ -7,6 +7,9 @@ Assistente AI offline con base di conoscenza personale ed enciclopedia offline �
 - **Chat con AI locale**: parli con un modello linguistico che gira interamente sul tuo computer tramite [Ollama](https://ollama.com). Nessun dato viene inviato a servizi esterni.
 - **Base di conoscenza personale**: indica una cartella con i tuoi documenti (PDF, DOCX, TXT, MD). Vengono letti, suddivisi in blocchi e indicizzati con ricerca semantica.
 - **Enciclopedia offline (Wikipedia via Kiwix/ZIM)**: carica un archivio Wikipedia offline (o Wiktionary, guide di sopravvivenza, ecc.) in formato ZIM, scaricabile da [library.kiwix.org](https://library.kiwix.org/), e consultalo con ricerca full-text, navigazione tra i link e voce casuale — tutto localmente, senza server Kiwix separato.
+- **Cartografia offline (MBTiles)**: carica una mappa offline in formato MBTiles (generabile con strumenti come MOBAC) e naviga per coordinate o trascinando con il mouse.
+- **Formazione**: crea corsi e lezioni personali in Markdown, genera automaticamente quiz di verifica con l'AI locale, traccia i progressi di completamento.
+- **Strumenti Dati**: operazioni di trasformazione testo stile CyberChef (Base64, URL encoding, hex/binario, hash MD5/SHA/CRC32, conversioni numeriche dec/hex/bin utili per debug seriale, formattazione JSON), concatenabili in una ricetta.
 - **RAG (Retrieval-Augmented Generation)**: quando fai una domanda, l'app recupera automaticamente i passaggi più pertinenti dai tuoi documenti e li usa per rispondere in modo più preciso, citando le fonti.
 - **Interfaccia desktop** in PyQt5, completamente in italiano, con estetica terminale Vault-Tec: verde fosforescente su nero, mascotte originale, icone disegnate a runtime, sequenza di avvio animata.
 
@@ -17,11 +20,13 @@ Assistente AI offline con base di conoscenza personale ed enciclopedia offline �
 | Infrastruttura | Docker Compose (più container) | Un solo script Python |
 | Database vettoriale | Qdrant (servizio separato) | ChromaDB embedded (nessun servizio extra) |
 | Wikipedia offline | Kiwix-serve (server web) | Lettura diretta del file ZIM con `libzim` |
-| Mappe / corsi | Inclusi | Non inclusi (possibile estensione futura) |
+| Mappe offline | ProtoMaps | MBTiles (scheda Cartografia) |
+| Piattaforma educativa | Khan Academy + Kolibri | Corsi/lezioni Markdown creati liberamente + quiz generati dall'AI |
+| Strumenti dati | CyberChef (web) | Scheda nativa con ricette concatenabili (encoding, hash, conversioni) |
 | Interfaccia | Web (browser) | App desktop nativa |
 | Hardware consigliato | GPU dedicata per prestazioni piene | CPU sufficiente con modelli piccoli (3B) |
 
-L'idea è avere il cuore del progetto — **AI locale + ricerca semantica sui tuoi documenti + enciclopedia offline** — in una forma semplice da capire, modificare ed estendere.
+L'idea è avere il cuore del progetto — **AI locale + ricerca semantica sui tuoi documenti + enciclopedia offline + mappe + formazione** — in una forma semplice da capire, modificare ed estendere.
 
 ## Installazione
 
@@ -116,7 +121,6 @@ Problema di rendering di Qt in combinazione con `letter-spacing` nel foglio di s
 
 ## Possibili estensioni future
 
-- Mappe offline con ProtoMaps
 - Packaging come eseguibile standalone con PyInstaller (come hai già fatto per l'IGV configurator)
 - Supporto a più collezioni/knowledge base separate (es. "lavoro" e "hobby")
 - Effetto scanline/flicker visivo sopra la finestra
